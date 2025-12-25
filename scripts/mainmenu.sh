@@ -16,8 +16,8 @@ do
             ;;
         3)
             read -p "Enter database name to connect: " db
-            if [ -d "$db" ]; then
-                cd "$db" || exit
+            if [ -d ../Databases/"$db" ]; then
+                cd ../Databases/"$db" || exit
                 echo "Connected to $db"
             else
                 echo "Database not found"
