@@ -42,7 +42,7 @@ do
 			;;
 
 		8)
-			exit
+			break
 			;;
 
 		*)

@@ -1,9 +1,10 @@
 #!/bin/bash
 
 echo "======== Main menu =========="
+
 PS3="Choose an option:"
-select choice in "Create Database" "List Databases" "Connect database" "Drop database" "Exit" 
-do
+select choice in "Create Database" "List Databases" "Connect database" "Drop database" "Exit"
+do	
     case "$REPLY" in
         1)  #Create Database
             read -p "Enter database name: " db
@@ -28,6 +29,8 @@ do
 	    if [ -d ../Databases/"$db" ]; then
                 cd ../Databases/"$db" || exit
                 echo "Connected to $db"
+		../../scripts/connectDB.sh
+		exit
             else
                 echo "Database not found"
             fi
