@@ -1,6 +1,6 @@
 #!/bin/bash
 
-Path_to_DB="../Databases/$db"
+#Path_to_DB="../Databases/$db"
 
 read -p "Enter Table name to drop: " Table 
     if [ -z "$Table" ]; then
@@ -11,7 +11,7 @@ read -p "Enter Table name to drop: " Table
 read -p "Are you sure you want to drop '$Table'? (y/n): " confirm
     case "$confirm" in
   	    y|Y)
-  	        rm  "Path_to_DB/$Table" 2>/dev/null && echo "Table dropped" || echo "Table not found"
+  	        rm  "$Table" 2>/dev/null && echo "Table dropped" || echo "Table not found"
 	        ;;
 
         *)

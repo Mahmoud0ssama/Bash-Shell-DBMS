@@ -1,8 +1,10 @@
 #!/bin/bash 
 
+clear
 echo "Connected database is: $db"
 
-clear
+Script_Path="../../scripts"
+
 PS3="Choose an option: "
 select choice in \
 	"Create Table" \
@@ -16,31 +18,31 @@ select choice in \
 do
 	case "$REPLY" in 
 		1)
-			./CreateTable.sh
+			"$Script_Path/CreateTable.sh"
 			;;
 		
 		2)
-			./ListTables.sh
+			"$Script_Path/ListTables.sh"
 			;;
 
 		3)
-			./DropTable.sh
+			"$Script_Path/DropTable.sh"
 			;;
 
 		4)
-			./InsertintoTable.sh
+			"$Script_Path/InsertintoTable.sh"
 			;;
 
 		5)
-			./SelectfromTable.sh
+			"$Script_Path/SelectfromTable.sh"
 			;;
 
 		6)
-			./DeletefromTable.sh
+			"$Script_Path/DeletefromTable.sh"
 			;;
 
 		7)
-			./UpdateTable.sh
+			"$Script_Path/UpdateTable.sh"
 			;;
 
 		8)
