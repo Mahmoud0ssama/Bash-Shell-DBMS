@@ -1,5 +1,7 @@
 #!/bin/bash 
 
+echo "Connected database is: $db"
+
 clear
 PS3="Choose an option: "
 select choice in \

@@ -29,6 +29,7 @@ do
 	    if [ -d ../Databases/"$db" ]; then
                 cd ../Databases/"$db" || exit
                 echo "Connected to $db"
+                export db
 		../../scripts/connectDB.sh
 		exit
             else
