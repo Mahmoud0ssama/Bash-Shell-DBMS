@@ -30,7 +30,7 @@ do
                 cd ../Databases/"$db" || exit
                 echo "Connected to $db"
                 export db
-		../../scripts/connectDB.sh
+		../../scripts/ConnectDB.sh
 		exit
             else
                 echo "Database not found"
