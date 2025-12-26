@@ -41,12 +41,18 @@ while true; do
             # Check if it exists in the parallel folder
             if [ -d "../Databases/$db" ]; then
                 echo "Connected to $db"
+<<<<<<< HEAD
                 sleep 1
                 clear
                 # Call the connect script from CURRENT folder
                if [ -f "./ConnectDB.sh" ]; then
                    source ./ConnectDB.sh "$db"
                 fi
+=======
+                export db
+		../../scripts/ConnectDB.sh
+		exit
+>>>>>>> 3433acf0cd2289147d91af4387c82a038a7d335e
             else
                 echo "Error: Database '$db' not found."
             fi
