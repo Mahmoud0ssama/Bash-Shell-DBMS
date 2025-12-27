@@ -17,6 +17,12 @@ while true; do
                 echo "Database name cannot be empty"
                 continue
             fi
+            
+            if [[ ! "$db" =~ ^[a-zA-Z]+$ ]]; then
+                echo "Error Database name: must be a string "
+                continue
+            fi
+            
             #Hides “File exists” error and echo created if succeed or exist if failed to create
 	        mkdir ../Databases/"$db" 2>/dev/null && echo "Database created" || echo "Database already exists" 
 	        sleep 1
