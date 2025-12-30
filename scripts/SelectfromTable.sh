@@ -32,12 +32,11 @@ get_cols() {
     nums=""
 
     for c in "${arr[@]}"; do
-        n=$(get_col_num "$c")
-        #check if column exist
-        [ -z "$n" ] && return 1
-        #Appends number + comma
+        c="${c//[[:space:]]/}"
+        n=$(get_col_num "$c") || return 1
         nums+="$n,"
     done
+
     #remove last comma
     echo "${nums%,}"
 }
@@ -49,49 +48,49 @@ condition_menu() {
 
     cond_num=$(get_col_num "$cond_col")
     [ -z "$cond_num" ] && return 1
+
+    return 0
 }
-# ---------------- Print all header ----------------
-print_header() {
+prepare_all_cols() {
     cols=$(awk -F'[|:]' '{ for(i=1;i<=NF;i+=3) printf "%d,", (i+2)/3 }' "$META_FILE")
     cols="${cols%,}"
 }
+
 # ---------------- Print headers + data ----------------
 #print_data "2,3" 1 5 
 #equivalent to
 #SELECT col2,col3 WHERE col1 = 5
 print_data() {
-    awk -F'|' -v cols="$1" -v k="$2" -v v="$3" '
+    awk -F':' -v cols="$1" -v k="$2" -v v="$3" '
     BEGIN {
-        split(cols, c, ",")  
+        split(cols, c, ",")
+        if (k == "") k = 0
     }
-    #-------- Build the header -----------
-    #NR: global record number -> counts all lines across all input files
-    #FNR: record number ->  counts lines in current file 
+
+    # ---- Read metadata ----
     NR==FNR {
-        split($0, meta, "[|:]")     #meta has all field names
+        split($0, meta, "[|:]")
         for (i=1;i<=length(c);i++)
-            #(c[i]-1)*3 + 1 -> col num to metadata field index
-            #header = meta[field index]
             headers[i] = meta[(c[i]-1)*3 + 1]
-        next    #move to next line -> next file(Table)
+        next
     }
-    #--------- print the header -----------
-    NR==2 {
+
+    # ---- Print headers once ----
+    FNR==1 {
         for (i=1;i<=length(headers);i++)
             printf "%s\t\t", headers[i]
-        print ""    #\n
+        print ""
     }
-    #where condition
-    #$k value of column k in current row
-    #k=="" -> no condition
-    #$k==v  -> $k = value from user
-    (k=="" || $k==v) {
+
+    # ---- WHERE condition ----
+    (k==0 || $k==v) {
         for (i=1;i<=length(c);i++)
             printf "%s\t\t", $c[i]
         print ""
     }
     ' "$META_FILE" "$TABLE_FILE"
 }
+
 
 # ================= SELECT MENU =================
 while true; do
@@ -108,20 +107,20 @@ while true; do
 
     # -------- SELECT ALL --------
     1)
-        print_header
+        prepare_all_cols
         print_data "$cols"
         ;;
 
     # -------- SELECT * WHERE --------
     2)
         condition_menu || { echo "Invalid condition"; continue; }
-        print_header
+        prepare_all_cols
         print_data "$cols" "$cond_num" "$cond_val"
         ;;
 
     # -------- SELECT ONE COLUMN --------
     3)
-        read -p "Enter column name: " col
+        read -r -p "Enter column name: " col
         col_num=$(get_col_num "$col")
         [ -z "$col_num" ] && { echo "Invalid column"; continue; }
 
@@ -141,12 +140,13 @@ while true; do
 
     # -------- SELECT MULTIPLE COLUMNS --------
     4)
-        read -p "Enter column names (comma separated): " cols
-        col_nums=$(get_multi_cols "$cols") || { echo "Invalid column"; continue; }
+        read -p "Enter column names (comma separated): " col_names
+        col_nums=$(get_cols "$col_names") || { echo "Invalid column"; continue; }
+
 
         echo "1) Without condition"
         echo "2) With condition"
-        read -p "Choose: " opt
+        read -r -p "Choose: " opt
 
         if [ "$opt" == "1" ]; then
             print_data "$col_nums"
