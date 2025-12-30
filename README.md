@@ -41,9 +41,14 @@ Table metadata (columns, data types, primary key) is stored in a separate `.meta
 ## Data Representation
 
 ### Metadata File
-- Format:
-column_name:data_type:is_primary_key
-example: id:int:yes|name:string:no|course:string:no
+
+**Format:**
+
+`column_name:data_type:is_primary_key`
+
+**Example:**
+`id:int:yes | name:string:no | course:string:no`
+
 
 ### Table File
 - Data is stored in plain text
