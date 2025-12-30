@@ -9,7 +9,7 @@ while true; do
     read -p "Enter table name (or 'exit' to return): " tablename
 
     if [[ "$tablename" == "exit" ]]; then
-        return
+        return 
     fi
 
     # Validation
@@ -18,7 +18,7 @@ while true; do
         continue
     fi
 
-    # Path Fix: We are in scripts, so DBs are in ../Databases
+    # We are in scripts, so DBs are in ../Databases
     if [ -f "../Databases/$dbname/$tablename" ]; then
         echo "Error: Table '$tablename' already exists."
         continue
@@ -30,14 +30,21 @@ while true; do
         continue
     fi
 
-    metaData=""
+    metaData=""     #Initializes an empty string variable
     hasPK="no"
 
     for ((i=1; i<=col_count; i++)); do
         echo "--- Column $i ---"
         
-        # Name
-        read -p "Enter Name: " colName
+       # Name
+        while true; do
+            read -p "Enter Name: " colName
+            if [[ "$colName" =~ ^[a-zA-Z_]+$ ]]; then
+                 break
+            else
+                 echo "Invalid name"
+                 fi
+        done
         
         # Type
         while true; do
@@ -61,7 +68,6 @@ while true; do
     if [[ "$hasPK" == "no" ]]; then
         echo "Error: Must have Primary Key."
     else
-        # Fix paths here too
         touch "../Databases/$dbname/$tablename"
         echo "$metaData" > "../Databases/$dbname/$tablename.meta"
         echo "Table '$tablename' created successfully."

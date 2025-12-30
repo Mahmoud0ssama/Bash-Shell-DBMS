@@ -1,7 +1,5 @@
 #!/bin/bash
 
-PS3="Choose an option:"
-
 while true; do
     echo "======== Main menu =========="
     #-e enables interpretation of backslash escapes like \n
@@ -17,8 +15,7 @@ while true; do
                 echo "Database name cannot be empty"
                 continue
             fi
-            
-            if [[ ! "$db" =~ ^[a-zA-Z]+$ ]]; then
+            if [[ ! "$db" =~ ^[a-zA-Z_]+$ ]]; then
                 echo "Error Database name: must be a string "
                 continue
             fi
@@ -73,8 +70,7 @@ while true; do
             read -p "Are you sure you want to drop '$db'? (y/n): " confirm
             case "$confirm" in
                 y|Y)
-                    rm -r "../Databases/$db" 2>/dev/null \
-                        && echo "Database dropped" || echo "Failed to drop database"
+                rm -r "../Databases/$db" 2>/dev/null && echo "Database dropped" || echo "Failed to drop database"
                     ;;
                 *)
                     echo "Drop cancelled"

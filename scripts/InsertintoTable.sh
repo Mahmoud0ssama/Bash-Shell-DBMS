@@ -9,7 +9,7 @@ fi
 
 echo "-------- Insert into Table in '$dbname' --------"
 
-# 1. List Tables (Hide .meta files)
+#List Tables (Hide .meta files)
 echo "Available Tables:"
 ls -1 "../Databases/$dbname" | grep -v ".meta"
 
@@ -22,7 +22,7 @@ fi
 echo ""
 read -p "Enter table name: " tableName
 
-# 2. Check Paths
+# Check Paths
 dbPath="../Databases/$dbname/$tableName"
 metaPath="../Databases/$dbname/$tableName.meta"
 
@@ -32,7 +32,7 @@ if [[ -z "$tableName" || ! -f "$dbPath" ]]; then
     return
 fi
 
-# 3. Read Metadata (Format: colName:colType:isPK|colName:colType:isPK)
+# Read Metadata (Format: colName:colType:isPK|colName:colType:isPK)
 metaData=$(cat "$metaPath")
 
 # Split metadata into an array using '|' as the separator
@@ -41,7 +41,7 @@ IFS='|' read -r -a columnsArray <<< "$metaData"
 row=""
 colIndex=1
 
-# 4. Loop through every column
+# Loop through every column
 for colDef in "${columnsArray[@]}"; do
     # Extract details (Format: Name:Type:PK)
     colName=$(echo $colDef | cut -d: -f1)
@@ -63,7 +63,7 @@ for colDef in "${columnsArray[@]}"; do
             fi
         fi
                 if [[ "$colType" == "string" ]]; then
-       if [[ ! "$val" =~ ^[a-zA-Z\ ]+$ ]]; then
+      if [[ ! "$val" =~ ^[a-zA-Z\ _]+$ ]]; then
                 echo "Error: '$colName' must be an string."
                 continue
             fi
@@ -95,7 +95,7 @@ for colDef in "${columnsArray[@]}"; do
     ((colIndex++))
 done
 
-# 5. Insert Data
+#  Insert Data
 echo "$row" >> "$dbPath"
 sleep 1
 echo ""

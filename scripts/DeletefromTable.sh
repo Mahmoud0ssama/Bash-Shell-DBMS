@@ -2,7 +2,7 @@
 
 dbname=$1
 
-# 1. List Tables
+# List Tables
 echo "-------- Delete Menu for '$dbname' --------"
 echo "Available Tables:"
 ls -1 "../Databases/$dbname" | grep -v ".meta"
@@ -16,7 +16,7 @@ fi
 echo ""
 read -p "Enter Table name: " tableName
 
-# 2. Check existence
+# Check existence
 dbPath="../Databases/$dbname/$tableName"
 metaPath="../Databases/$dbname/$tableName.meta"
 
@@ -26,12 +26,12 @@ if [[ -z "$tableName" || ! -f "$dbPath" ]]; then
     return
 fi
 
-# 3. Load Metadata (Needed for all operations)
+# Load Metadata (Needed for all operations)
 metaData=$(cat "$metaPath")   #Read Schema
 IFS='|' read -r -a columnsArray <<< "$metaData"
 numColumns=${#columnsArray[@]}
 
-# 4. Show Delete Sub-Menu
+# Show Delete Sub-Menu
 while true; do
     echo "-------- Delete Options for Table: $tableName --------"
     echo "1. Delete specific Row (by Primary Key)"
@@ -132,7 +132,7 @@ while true; do
             read -p "Are you sure you want to delete column '$colToDelete'? (y/n): " confirm
             if [[ "$confirm" != "y" ]]; then continue; fi
 
-            # 1. Update Data File using `cut`
+            # Update Data File using `cut`
             # Logic: We keep fields 1-(N-1) and (N+1)-End
             tempFile="${dbPath}_temp"
             
@@ -149,7 +149,7 @@ while true; do
             
             mv "$tempFile" "$dbPath"
 
-            # 2. Update Metadata File
+            #Update Metadata File
             # Rebuild string skipping the deleted column
             newMeta=""
             sep=""

@@ -17,7 +17,7 @@ while true; do
     read -p "Choose an option: " choice
 
     case "$choice" in
-        1)  # Create Table
+        1)
             if [ -x "./CreateTable.sh" ]; then
                 source ./CreateTable.sh "$dbName"
             else
