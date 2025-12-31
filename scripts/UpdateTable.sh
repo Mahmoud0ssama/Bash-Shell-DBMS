@@ -181,8 +181,10 @@ elif [[ "$opt" == "2" ]]; then
         fi
 
         awk -F':' -v OFS=':' \
-            -v s="$setIndex" -v v="$newVal" \
-            -v c="$condIndex" -v cv="$condVal" '
+            -v s="$setIndex" \
+            -v v="$newVal" \
+            -v c="$condIndex" \
+            -v cv="$condVal" '
         {
             if ($c + 0 == cv + 0)
                 $s = v
