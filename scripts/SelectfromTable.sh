@@ -11,17 +11,18 @@ META_FILE="$DB_PATH/$table.meta"
 
 if [ ! -f "$TABLE_FILE" ] || [ ! -f "$META_FILE" ]; then
     echo "Error: Table does not exist"
-    exit 1
+    sleep 2
+    return 1
+    
 fi
 
-#meta_file style -> columnName:columnType:isPrimaryKey | ...
+#meta_file columnName:columnType:isPrimaryKey 
 #split on | or : , print fields 1,4,7, ...
-
 get_col_num() {
     awk -F'[|:]' -v col="$1" '
     {
         for (i=1;i<=NF;i+=3)
-            if ($i==col) print (i+2)/3      #make numbers 1,2,3,..
+            if ($i==col) print (i+2)/3 
     }' "$META_FILE"
 }
 
