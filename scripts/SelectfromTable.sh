@@ -8,7 +8,7 @@ read -p "Enter table name: " table
 TABLE_FILE="$DB_PATH/$table"
 META_FILE="$DB_PATH/$table.meta"
 
-#Validation
+
 if [ ! -f "$TABLE_FILE" ] || [ ! -f "$META_FILE" ]; then
     echo "Error: Table does not exist"
     exit 1
@@ -16,7 +16,7 @@ fi
 
 #meta_file style -> columnName:columnType:isPrimaryKey | ...
 #split on | or : , print fields 1,4,7, ...
-# ---------------- Get column number ----------------
+
 get_col_num() {
     awk -F'[|:]' -v col="$1" '
     {
@@ -30,19 +30,11 @@ get_cols() {
     nums=""
 
     for c in "${arr[@]}"; do
-<<<<<<< HEAD
-        n=$(get_col_num "$c")
-        [ -z "$n" ] && return 1
-        nums+="$n,"
-    done
-=======
         c="${c//[[:space:]]/}"
         n=$(get_col_num "$c") || return 1
         nums+="$n,"
     done
 
-    #remove last comma
->>>>>>> bacf8283da857897cda3869641625121fa0b5c95
     echo "${nums%,}"
 }
 
@@ -55,19 +47,12 @@ condition_menu() {
 
     return 0
 }
-<<<<<<< HEAD
-print_header() {
-=======
 prepare_all_cols() {
->>>>>>> bacf8283da857897cda3869641625121fa0b5c95
     cols=$(awk -F'[|:]' '{ for(i=1;i<=NF;i+=3) printf "%d,", (i+2)/3 }' "$META_FILE")
     cols="${cols%,}"
 }
 
-<<<<<<< HEAD
-=======
-# ---------------- Print headers + data ----------------
->>>>>>> bacf8283da857897cda3869641625121fa0b5c95
+
 #print_data "2,3" 1 5 
 #equivalent to
 #SELECT col2,col3 WHERE col1 = 5
@@ -77,12 +62,8 @@ print_data() {
         split(cols, c, ",")
         if (k == "") k = 0
     }
-<<<<<<< HEAD
-    #-------- Build the header -----------
-=======
 
     # ---- Read metadata ----
->>>>>>> bacf8283da857897cda3869641625121fa0b5c95
     NR==FNR {
         split($0, meta, "[|:]")
         for (i=1;i<=length(c);i++)
@@ -96,13 +77,9 @@ print_data() {
             printf "%s\t\t", headers[i]
         print ""
     }
-<<<<<<< HEAD
-    (k=="" || $k==v) {
-=======
 
     # ---- WHERE condition ----
     (k==0 || $k==v) {
->>>>>>> bacf8283da857897cda3869641625121fa0b5c95
         for (i=1;i<=length(c);i++)
             printf "%s\t\t", $c[i]
         print ""
@@ -124,20 +101,20 @@ while true; do
 
     case "$choice" in
 
-    # -------- SELECT ALL --------
+    #SELECT ALL
     1)
         prepare_all_cols
         print_data "$cols"
         ;;
 
-    # -------- SELECT * WHERE --------
+    #SELECT * WHERE
     2)
         condition_menu || { echo "Invalid condition"; continue; }
         prepare_all_cols
         print_data "$cols" "$cond_num" "$cond_val"
         ;;
 
-    # -------- SELECT ONE COLUMN --------
+    #SELECT ONE COLUMN
     3)
         read -r -p "Enter column name: " col
         col_num=$(get_col_num "$col")
@@ -157,7 +134,7 @@ while true; do
         fi
         ;;
 
-    # -------- SELECT MULTIPLE COLUMNS --------
+    #SELECT MULTIPLE COLUMNS
     4)
         read -p "Enter column names (comma separated): " col_names
         col_nums=$(get_cols "$col_names") || { echo "Invalid column"; continue; }
@@ -177,7 +154,7 @@ while true; do
         fi
         ;;
 
-    # -------- EXIT --------
+    # EXIT
     5)
         break
         ;;
