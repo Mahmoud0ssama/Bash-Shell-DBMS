@@ -2,7 +2,6 @@
 
 dbname=$1
 
-# List Tables
 echo "-------- Delete Menu for '$dbname' --------"
 echo "Available Tables:"
 ls -1 "../Databases/$dbname" | grep -v ".meta"
@@ -16,7 +15,6 @@ fi
 echo ""
 read -p "Enter Table name: " tableName
 
-# Check existence
 dbPath="../Databases/$dbname/$tableName"
 metaPath="../Databases/$dbname/$tableName.meta"
 
@@ -26,12 +24,10 @@ if [[ -z "$tableName" || ! -f "$dbPath" ]]; then
     return
 fi
 
-# Load Metadata (Needed for all operations)
 metaData=$(cat "$metaPath")   #Read Schema
 IFS='|' read -r -a columnsArray <<< "$metaData"
 numColumns=${#columnsArray[@]}
 
-# Show Delete Sub-Menu
 while true; do
     echo "-------- Delete Options for Table: $tableName --------"
     echo "1. Delete specific Row (by Primary Key)"
@@ -43,16 +39,14 @@ while true; do
 
     case $op in
         1) 
-            # === CASE 1: Delete Row by PK ===
+            #CASE 1: Delete Row by PK 
             
-            # Find PK Index
             pkColIndex=0
             pkColName=""
             currIndex=1
-#Iterates through every column      #name:type:isPK 
             for colDef in "${columnsArray[@]}"; do
-                colName=$(echo $colDef | cut -d: -f1)  #field 1
-                isPK=$(echo $colDef | cut -d: -f3)     #field 3
+                colName=$(echo $colDef | cut -d: -f1)  
+                isPK=$(echo $colDef | cut -d: -f3)    
                 if [[ "$isPK" == "yes" ]]; then
                     pkColIndex=$currIndex
                     pkColName=$colName
@@ -76,7 +70,6 @@ while true; do
             if [[ "$found" != "yes" ]]; then
                 echo "Error: Record with ID '$pkValue' not found."
             else
-                # Delete using awk (safest method)
                 tempFile="${dbPath}_temp"
                 awk -F: -v col="$pkColIndex" -v val="$pkValue" '$col != val' "$dbPath" > "$tempFile"
                 mv "$tempFile" "$dbPath"
@@ -86,7 +79,7 @@ while true; do
             ;;
 
         2) 
-            # === CASE 2: Delete Column ===
+            #CASE 2: Delete Column
             
             echo "--- Current Columns ---"
             idx=1
@@ -132,8 +125,7 @@ while true; do
             read -p "Are you sure you want to delete column '$colToDelete'? (y/n): " confirm
             if [[ "$confirm" != "y" ]]; then continue; fi
 
-            # Update Data File using `cut`
-            # Logic: We keep fields 1-(N-1) and (N+1)-End
+            #We keep fields 1-(N-1) and (N+1)-End 
             tempFile="${dbPath}_temp"
             
             if [[ $delIndex -eq 1 ]]; then
@@ -150,7 +142,6 @@ while true; do
             mv "$tempFile" "$dbPath"
 
             #Update Metadata File
-            # Rebuild string skipping the deleted column
             newMeta=""
             sep=""
             for colDef in "${columnsArray[@]}"; do
@@ -163,7 +154,6 @@ while true; do
             
             echo "$newMeta" > "$metaPath"
             
-            # Update the array variable so the script knows the new structure immediately
             IFS='|' read -r -a columnsArray <<< "$newMeta"
             numColumns=${#columnsArray[@]}
 
@@ -172,7 +162,7 @@ while true; do
             ;;
 
         3) 
-            # === CASE 3: Delete All Data ===
+            #CASE 3: Delete All Data
             read -p "WARNING: This will empty the table. Are you sure? (y/n): " confirm
             if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
                 > "$dbPath"
@@ -184,7 +174,6 @@ while true; do
             ;;
 
         4) 
-            # Back
             return 
             ;;
 

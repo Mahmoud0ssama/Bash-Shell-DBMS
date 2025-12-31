@@ -8,7 +8,7 @@ read -p "Enter table name: " table
 TABLE_FILE="$DB_PATH/$table"
 META_FILE="$DB_PATH/$table.meta"
 
-# ---------------- Validation ----------------
+#Validation
 if [ ! -f "$TABLE_FILE" ] || [ ! -f "$META_FILE" ]; then
     echo "Error: Table does not exist"
     exit 1
@@ -25,24 +25,18 @@ get_col_num() {
     }' "$META_FILE"
 }
 
-#convert column names into column numbers as awk works with nums not names
-# ---------------- Get multiple columns ----------------
 get_cols() {
     IFS=',' read -ra arr <<< "$1"
     nums=""
 
     for c in "${arr[@]}"; do
         n=$(get_col_num "$c")
-        #check if column exist
         [ -z "$n" ] && return 1
-        #Appends number + comma
         nums+="$n,"
     done
-    #remove last comma
     echo "${nums%,}"
 }
 
-# ---------------- Condition menu ----------------
 condition_menu() {
     read -p "Enter condition column: " cond_col
     read -p "Enter value: " cond_val
@@ -50,12 +44,11 @@ condition_menu() {
     cond_num=$(get_col_num "$cond_col")
     [ -z "$cond_num" ] && return 1
 }
-# ---------------- Print all header ----------------
 print_header() {
     cols=$(awk -F'[|:]' '{ for(i=1;i<=NF;i+=3) printf "%d,", (i+2)/3 }' "$META_FILE")
     cols="${cols%,}"
 }
-# ---------------- Print headers + data ----------------
+
 #print_data "2,3" 1 5 
 #equivalent to
 #SELECT col2,col3 WHERE col1 = 5
@@ -65,8 +58,6 @@ print_data() {
         split(cols, c, ",")  
     }
     #-------- Build the header -----------
-    #NR: global record number -> counts all lines across all input files
-    #FNR: record number ->  counts lines in current file 
     NR==FNR {
         split($0, meta, "[|:]")     #meta has all field names
         for (i=1;i<=length(c);i++)
@@ -81,10 +72,6 @@ print_data() {
             printf "%s\t\t", headers[i]
         print ""    #\n
     }
-    #where condition
-    #$k value of column k in current row
-    #k=="" -> no condition
-    #$k==v  -> $k = value from user
     (k=="" || $k==v) {
         for (i=1;i<=length(c);i++)
             printf "%s\t\t", $c[i]

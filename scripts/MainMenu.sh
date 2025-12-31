@@ -2,15 +2,13 @@
 
 while true; do
     echo "======== Main menu =========="
-    #-e enables interpretation of backslash escapes like \n
     echo -e "1. Create Database\n2. List Databases\n3. Connect To Database\n4. Drop Database\n5. Exit"
     
     read -p "Enter your choice: " choice
 
     case "$choice" in
-        1)  #Create Database
+        1)  #Create Database 
             read -p "Enter database name: " db
-	        #-z checks if string length is zero
 	        if [ -z "$db" ]; then
                 echo "Database name cannot be empty"
                 continue
@@ -20,7 +18,6 @@ while true; do
                 continue
             fi
             
-            #Hides “File exists” error and echo created if succeed or exist if failed to create
 	        mkdir ../Databases/"$db" 2>/dev/null && echo "Database created" || echo "Database already exists" 
 	        sleep 1
 	        ;;
@@ -29,7 +26,6 @@ while true; do
             if [ -d "../Databases" ] && [ "$(ls -A ../Databases)" ]; then
                 clear
                 echo "Databases List:"
-                #sed adds 'DB' to the end | nl adds numbering with width 2 and ")" separator
                 ls ../Databases | sed 's/$/ DB/' | nl -w 2 -s ') '
             else
                 echo "No databases found"
