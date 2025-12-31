@@ -59,7 +59,7 @@ Table metadata (columns, data types, primary key) is stored in a separate `.meta
 
 1. Open a terminal and navigate to the project directory:
 ```bash
-cd DBMSscript/
+cd DBMSscript/scripts/
 chmod +x *.sh
 ./MainMenu.sh
 
