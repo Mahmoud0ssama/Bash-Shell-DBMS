@@ -10,7 +10,6 @@ fi
 echo ""
 echo "-------- Update Table in '$dbname' --------"
 
-# List Tables
 echo "Available Tables:"
 ls -1 "../Databases/$dbname" | grep -v ".meta"
 
@@ -32,12 +31,9 @@ if [[ -z "$tableName" || ! -f "$dbPath" ]]; then
     return
 fi
 
-#read metaddata
 metaData=$(cat "$metaPath")
 IFS='|' read -r -a columnsArray <<< "$metaData"
 
-#-------------------- Functions -----------------------
-# Get column index by name
 get_col_index() {
     local name="$1"
     local i=1
@@ -51,7 +47,7 @@ get_col_index() {
     done
 }
 
-# Get column type by name
+
 get_col_type() {
     local name="$1"
     for colDef in "${columnsArray[@]}"; do
@@ -63,7 +59,7 @@ get_col_type() {
         fi
     done
 }
-#display cols of table
+
 display_columns() {
     echo ""
     echo "Available Columns:"
@@ -90,7 +86,7 @@ is_primary_key() {
     return 1 
 }
 
-# ---------------- Choose column to update ----------------
+# Choose column to update 
 display_columns
 read -p "Enter column name to update: " setCol
 setIndex=$(get_col_index "$setCol")
@@ -104,7 +100,6 @@ fi
 
 read -p "Enter new value: " newVal
 
-# Validate new value type
 if [[ "$setType" == "int" ]]; then
     if [[ ! "$newVal" =~ ^[0-9]+$ ]]; then
         echo "Error: '$setCol' must be an integer."
@@ -126,7 +121,7 @@ echo "1) Update ALL rows"
 echo "2) Update with condition (WHERE)"
 read -p "Choose option: " opt
 
-# ---------------- UPDATE ALL ----------------
+# UPDATE ALL 
 if [[ "$opt" == "1" ]]; then
 
     if is_primary_key "$setCol"; then
@@ -143,7 +138,7 @@ if [[ "$opt" == "1" ]]; then
     ' "$dbPath" > "$dbPath.tmp"
 
 
-# ---------------- UPDATE WITH CONDITION ----------------
+# UPDATE WITH CONDITION
 elif [[ "$opt" == "2" ]]; then
     display_columns
     read -p "Enter condition column: " condCol
@@ -172,7 +167,6 @@ elif [[ "$opt" == "2" ]]; then
     fi
 
 
-    # Validate condition value 
     if [[ "$condType" == "int" ]]; then
         if [[ ! "$condVal" =~ ^[0-9]+$ ]]; then
             echo "Error: '$condCol' must be an integer."
@@ -181,8 +175,10 @@ elif [[ "$opt" == "2" ]]; then
         fi
 
         awk -F':' -v OFS=':' \
-            -v s="$setIndex" -v v="$newVal" \
-            -v c="$condIndex" -v cv="$condVal" '
+            -v s="$setIndex" \
+            -v v="$newVal" \
+            -v c="$condIndex" \
+            -v cv="$condVal" '
         {
             if ($c + 0 == cv + 0)
                 $s = v

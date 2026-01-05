@@ -12,13 +12,11 @@ while true; do
         return 
     fi
 
-    # Validation
     if [[ -z "$tablename" || ! "$tablename" =~ ^[a-zA-Z0-9_]+$ ]]; then
         echo "Error: Invalid name."
         continue
     fi
 
-    # We are in scripts, so DBs are in ../Databases
     if [ -f "../Databases/$dbname/$tablename" ]; then
         echo "Error: Table '$tablename' already exists."
         continue
@@ -30,13 +28,12 @@ while true; do
         continue
     fi
 
-    metaData=""     #Initializes an empty string variable
+    metaData=""   
     hasPK="no"
 
     for ((i=1; i<=col_count; i++)); do
         echo "--- Column $i ---"
         
-       # Name
         while true; do
             read -p "Enter Name: " colName
             if [[ "$colName" =~ ^[a-zA-Z_]+$ ]]; then
@@ -45,15 +42,15 @@ while true; do
                  echo "Invalid name"
                  fi
         done
-        
-        # Type
+     
+
         while true; do
             read -p "Enter Type (int/string): " colType
             if [[ "$colType" == "int" || "$colType" == "string" ]]; then break; fi
             echo "Invalid type."
         done
 
-        # PK
+      
         isPK="no"
         if [[ "$hasPK" == "no" ]]; then
             read -p "Primary Key? (y/n): " pkChoice

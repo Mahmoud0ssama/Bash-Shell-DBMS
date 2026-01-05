@@ -2,7 +2,6 @@
 
 dbName=$1
 
-# Safety check: Ensure database name was passed
 if [ -z "$dbName" ]; then
     echo "Error: Database name lost. returning..."
     return

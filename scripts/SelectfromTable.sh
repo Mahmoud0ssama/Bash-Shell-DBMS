@@ -8,25 +8,24 @@ read -p "Enter table name: " table
 TABLE_FILE="$DB_PATH/$table"
 META_FILE="$DB_PATH/$table.meta"
 
-# ---------------- Validation ----------------
+
 if [ ! -f "$TABLE_FILE" ] || [ ! -f "$META_FILE" ]; then
     echo "Error: Table does not exist"
-    exit 1
+    sleep 2
+    return 1
+    
 fi
 
-#meta_file style -> columnName:columnType:isPrimaryKey | ...
+#meta_file columnName:columnType:isPrimaryKey 
 #split on | or : , print fields 1,4,7, ...
-# ---------------- Get column number ----------------
 get_col_num() {
     awk -F'[|:]' -v col="$1" '
     {
         for (i=1;i<=NF;i+=3)
-            if ($i==col) print (i+2)/3      #make numbers 1,2,3,..
+            if ($i==col) print (i+2)/3 
     }' "$META_FILE"
 }
 
-#convert column names into column numbers as awk works with nums not names
-# ---------------- Get multiple columns ----------------
 get_cols() {
     IFS=',' read -ra arr <<< "$1"
     nums=""
@@ -37,11 +36,9 @@ get_cols() {
         nums+="$n,"
     done
 
-    #remove last comma
     echo "${nums%,}"
 }
 
-# ---------------- Condition menu ----------------
 condition_menu() {
     read -p "Enter condition column: " cond_col
     read -p "Enter value: " cond_val
@@ -56,7 +53,7 @@ prepare_all_cols() {
     cols="${cols%,}"
 }
 
-# ---------------- Print headers + data ----------------
+
 #print_data "2,3" 1 5 
 #equivalent to
 #SELECT col2,col3 WHERE col1 = 5
@@ -105,20 +102,20 @@ while true; do
 
     case "$choice" in
 
-    # -------- SELECT ALL --------
+    #SELECT ALL
     1)
         prepare_all_cols
         print_data "$cols"
         ;;
 
-    # -------- SELECT * WHERE --------
+    #SELECT * WHERE
     2)
         condition_menu || { echo "Invalid condition"; continue; }
         prepare_all_cols
         print_data "$cols" "$cond_num" "$cond_val"
         ;;
 
-    # -------- SELECT ONE COLUMN --------
+    #SELECT ONE COLUMN
     3)
         read -r -p "Enter column name: " col
         col_num=$(get_col_num "$col")
@@ -138,7 +135,7 @@ while true; do
         fi
         ;;
 
-    # -------- SELECT MULTIPLE COLUMNS --------
+    #SELECT MULTIPLE COLUMNS
     4)
         read -p "Enter column names (comma separated): " col_names
         col_nums=$(get_cols "$col_names") || { echo "Invalid column"; continue; }
@@ -158,7 +155,7 @@ while true; do
         fi
         ;;
 
-    # -------- EXIT --------
+    # EXIT
     5)
         break
         ;;
